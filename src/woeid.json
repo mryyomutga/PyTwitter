@@ -1,0 +1,50 @@
+{
+	"北九州":{
+		"placetype":"Town", "country":"Japan", "woeid":1110809, "country_code":"JP"
+	},
+	"千葉":{
+		"placetype":"Town", "country":"Japan", "woeid":1117034, "country_code":"JP"
+	},
+	"福岡":{
+		"placetype":"Town", "country":"Japan", "woeid":1117099, "country_code":"JP"
+	},
+	"広島":{
+		"placetype":"Town", "country":"Japan", "woeid":1117227, "country_code":"JP"
+	},
+	"川崎":{
+		"placetype":"Town", "country":"Japan", "woeid":1117502, "country_code":"JP"
+	},
+	"神戸":{
+		"placetype":"Town", "country":"Japan", "woeid":1117545, "country_code":"JP"
+	},
+	"名古屋":{
+		"placetype":"Town", "country":"Japan", "woeid":1117817, "country_code":"JP"
+	},
+	"札幌":{
+		"placetype":"Town", "country":"Japan", "woeid":1118108, "country_code":"JP"
+	},
+	"仙台":{
+		"placetype":"Town", "country":"Japan", "woeid":1118129, "country_code":"JP"
+	},
+	"高松":{
+		"placetype":"Town", "country":"Japan", "woeid":1118285, "country_code":"JP"
+	},
+	"東京":{
+		"placetype":"Town", "country":"Japan", "woeid":1118370, "country_code":"JP"
+	},
+	"横浜":{
+		"placetype":"Town", "country":"Japan", "woeid":1118550, "country_code":"JP"
+	},
+	"沖縄":{
+		"placetype":"Town", "country":"Japan", "woeid":2345896, "country_code":"JP"
+	},
+	"大阪":{
+		"placetype":"Town", "country":"Japan", "woeid":15015370, "country_code":"JP"
+	},
+	"京都":{
+		"placetype":"Town", "country":"Japan", "woeid":15015372, "country_code":"JP"
+	},
+	"日本":{
+		"placetype":"Country", "country":"Japan", "woeid":23424856, "country_code":"JP"
+	}
+}

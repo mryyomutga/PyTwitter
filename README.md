@@ -25,5 +25,8 @@ Twitter APIにアクセスするためにアプリケーションの登録をす
 - json
 
 ## 説明
-- Pytwitter.pyのtweet関数でツイートすることができる
-- Pytwitter.pyのresearch関数でキーワードから50件のツイートを取得します
+- tweet関数でツイートする
+- research関数でキーワードから50件のツイートを取得
+- home_timeline関数で自分のタイムラインを取得
+- user_timeline関数で指定したユーザーのタイムラインを取得
+- place_trend関数で指定した地域のトレンドを取得
