@@ -10,18 +10,24 @@ URL = {
         "search":"https://api.twitter.com/1.1/search/tweets.json"
 }
 
-# MyTwitterAPIKey.jsonからTwitterAPIの読み出し
+# TwitterAPIKey.jsonからTwitterAPIの読み出し
 with open("TwitterAPIKey.json", "r") as f:
     apiKey = json.load(f)
 
 # Tweetを行う
 def tweet():
     # ツイートフォーム
-    print("つぶやく内容を入力してください")
-    message = input(">> ")
+    message = list()
+    print("つぶやく内容を入力してください(-qで入力終了)")
+    message.append(input(">> "))
+    while message[-1] != "-q":
+        message.append(input(">> "))
     print("------------------------------------------------")
 
-    params = {"status":message}
+    message.pop()
+    mes = "\n".join(message)
+    print(mes)
+    params = {"status":mes}
     # OAuth認証をし、POSTリクエストでツイート
     session = OAuth1Session(apiKey["CK"], apiKey["CS"], apiKey["AT"], apiKey["AS"])
     req = session.post(URL["tweet"], params=params)
