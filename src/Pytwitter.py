@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-# Pytwitter.py
+# Name      : Pytwitter.py
 # Author    : Ryoga Miyamoto
-
+# Outline   : PythonでTwitterAPIにアクセスしていろいろやる
 # Twitter APIのラッパーライブラリ(tweepy, python-twitter...)があるが直接APIを呼び出す
+
+# クラス化して、コンストラクタなどで各種設定を行った方がよい?
 
 # Python2でPython3用print()を使用するモジュール
 from __future__ import print_function
@@ -63,7 +65,7 @@ def home_timeline():
         print("<< Succeed!")
         for tweet in tweets:
             print("+----------------------------------------------+")
-            mes = " @{0}: {1}\n Date: {2}\n {3}".format(
+            mes = " @{0}: {1}\n created at {2}\n {3}".format(
                 tweet["user"]["screen_name"],
                 tweet["user"]["name"],
                 tweet["created_at"],
@@ -97,7 +99,7 @@ def user_timeline():
             print("<< Succeed!")
             for tweet in tweets:
                 print("+----------------------------------------------+")
-                mes = " @{0}: {1}\n Date: {2}\n {3}".format(
+                mes = " @{0}: {1}\n created at {2}\n {3}".format(
                     tweet["user"]["screen_name"],
                     tweet["user"]["name"],
                     tweet["created_at"],
@@ -171,7 +173,7 @@ def search():
         print("<< Succeed!")
         for tweet in tweets["statuses"]:
             print("+----------------------------------------------+")
-            mes = " @{0}: {1}\n Date: {2}\n {3}".format(
+            mes = " @{0}: {1}\n Created at {2}\n {3}".format(
                 tweet["user"]["screen_name"],
                 tweet["user"]["name"],
                 tweet["created_at"],
@@ -214,18 +216,6 @@ def place_trend():
     else:
         print("<< ERROR! : {0}".format(res.status_code))
 
-# リクエスト送信用URL
-# Twitterの開発者用のページを参照
-# URL:https://developer.twitter.com/en/docs
-URL = {
-    "tweet":"https://api.twitter.com/1.1/statuses/update.json",
-    "home_timeline":"https://api.twitter.com/1.1/statuses/home_timeline.json",
-    "user_timeline":"https://api.twitter.com/1.1/statuses/user_timeline.json",
-    "followers_list":"https://api.twitter.com/1.1/followers/list.json",
-    "search":"https://api.twitter.com/1.1/search/tweets.json",
-    "place_trend":"https://api.twitter.com/1.1/trends/place.json"
-}
-
 # cmd_mesを表示する関数
 def print_cmd_mes():
     print("+------------------+")
@@ -234,7 +224,7 @@ def print_cmd_mes():
     print("+------------------+")
 
 # 繰り返し実行する関数
-def twitter_main():
+def Pytwitter_main():
     # プログラム終了フラグ
     Escape = False
 
@@ -279,45 +269,95 @@ def twitter_main():
 
     print("Good Bye!!")
 
-# 取得したツイートのログリスト
-log = list()
 
-# TwitterAPIKey.jsonからKeyの読み出し
-with open("TwitterAPIKey.json", "r", encoding="utf-8") as f:
-    myinfo = json.load(f)
+def home_timeline_bot():
+    print("自分のタイムラインを取得します")
+    print(termname)
+    print("------------------------------------------------")
 
-# 地域情取得用WOEIDの読み出し
-# URL:https://shun1adhocblog.wordpress.com/2013/01/01/twitterapi%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%BF%E3%82%8B%E3%83%86%E3%82%B9%E3%83%88by-python/
-with open("woeid.json", "r", encoding="utf-8") as f:
-    place_code = json.load(f)
+    # リクエストに付与するパラメータ
+    params = {"count":50}
 
-# アカウント名を表示する場合
-name = "@" + myinfo["screen_name"]
-termname = name + " >> "
-# termname = ">> "
+    # OAuth認証をし、GETメソッドで自分のタイムラインを取得
+    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    res = session.get(URL["home_timeline"], params=params)
 
-# コマンドリスト
-cmd_mes = list()
-cmd_list =("tweet",
-           "home_timeline",
-           "user_timeline",
-           "followers_list",
-           "search",
-           "place_trend",
-           "check",         # コマンドリストの確認
-           "escape"         # プログラムの終了
-           )
-# Pytwitter
-# tweet()
-# home_timeline()
-# user_timeline()
-# followers_list()
-# search()
-# place_trend()
+    # レスポンスをJSON形式に変換
+    tweets = json.loads(res.text)
 
-twitter_main()
+    if res.status_code == 200:
+        print("<< Succeed!")
+        for tweet in tweets:
+            print("+----------------------------------------------+")
+            mes.append(" @{0}: {1}\n created at {2}\n {3}".format(
+                tweet["user"]["screen_name"],
+                tweet["user"]["name"],
+                tweet["created_at"],
+                tweet["text"]
+                ))
+            return "\n".join(mes)
+            # log.append(message)
+        print("+----------------------------------------------+")
+    else:
+        print("<< ERROR! : {0}".format(res.status_code))
 
-# ログに書き出す
-# with open("PytwitterLog.log", "a+", encoding="utf-8") as f:
-#     for l in log:
-#         f.write(l)
+
+
+# importされた場合は呼ばれない
+if __name__ == '__main__':
+
+    # リクエスト送信用URL
+    # Twitterの開発者用のページを参照
+    # URL:https://developer.twitter.com/en/docs
+    URL = {
+        "tweet":"https://api.twitter.com/1.1/statuses/update.json",
+        "home_timeline":"https://api.twitter.com/1.1/statuses/home_timeline.json",
+        "user_timeline":"https://api.twitter.com/1.1/statuses/user_timeline.json",
+        "followers_list":"https://api.twitter.com/1.1/followers/list.json",
+        "search":"https://api.twitter.com/1.1/search/tweets.json",
+        "place_trend":"https://api.twitter.com/1.1/trends/place.json"
+    }
+
+    # 取得したツイートのログリスト
+    log = list()
+
+    # TwitterAPIKey.jsonからKeyの読み出し
+    with open("TwitterAPIKey.json", "r", encoding="utf-8") as f:
+        myinfo = json.load(f)
+
+    # 地域情取得用WOEIDの読み出し
+    # URL:https://shun1adhocblog.wordpress.com/2013/01/01/twitterapi%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%BF%E3%82%8B%E3%83%86%E3%82%B9%E3%83%88by-python/
+    with open("woeid.json", "r", encoding="utf-8") as f:
+        place_code = json.load(f)
+
+    # アカウント名を表示する場合
+    name = "@" + myinfo["screen_name"]
+    termname = name + " >> "
+    # termname = ">> "
+
+    # コマンドリスト
+    cmd_mes = list()
+    cmd_list =("tweet",
+               "home_timeline",
+               "user_timeline",
+               "followers_list",
+               "search",
+               "place_trend",
+               "check",         # コマンドリストの確認
+               "escape"         # プログラムの終了
+               )
+
+    # tweet()
+    home_timeline_bot()
+    # user_timeline()
+    # followers_list()
+    # search()
+    # place_trend()
+
+    # twitter_main()
+    # print_cmd_mes()
+
+    # ログに書き出す
+    # with open("PytwitterLog.log", "a+", encoding="utf-8") as f:
+    #     for l in log:
+    #         f.write(l)
