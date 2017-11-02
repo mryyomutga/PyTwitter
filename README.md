@@ -9,6 +9,7 @@ PythonでTwitter APIを扱うライブラリとして`tweepy`や`python-twitter`
 
 ## 説明
 開発環境はPython3.6.3なのでそれ以外の環境で動作するかは保証しません(特にPython2系)
+
 | Method                 | Discription |
 |:-----------------------|:------------|
 | tweet                  | ツイートする |
