@@ -47,12 +47,12 @@ def tweet():
     else:
         print("<< ERROR! : {0}".format(req.status_code))
 
-# フォローリクエストを確認する
+# フォローリクエストの確認とユーザーIDを取得する
 # Argument : None
 # Return  :
 # Succeed : Response["ids"](User_ID_list)
 # Error   : HTTP status code is not 200(-1) or Not follow requests(-2)
-def get_follow_requests():
+def get_follow_request_uid():
     print("フォローリクエストを確認します")
     print("------------------------------------------------")
     params = {"cursor":-1,
@@ -244,8 +244,9 @@ def user_timeline():
 # 指定したユーザーのフォロワーを取得する
 # Argument : None
 # Return  : get user's followers list(followers)
-def followers_list():
-    print("ユーザーを指定してください")
+def get_follower_list():
+    print("指定したユーザーの最新のフォロワーを200人取得します")
+    print("@screen_nameを入力してください(@は抜いてね)")
     user = input(termname)
     print("------------------------------------------------")
 
@@ -369,10 +370,19 @@ def check_cmd_list():
         print(s)
     print("+------------------------+")
 
+# コンソール画面の消去
+def console_clear():
+    # OSの判定
+    if os.name == "nt":
+        os.system("CLS")
+    else:
+        os.system("clear")
+
 # 繰り返し実行する関数(このスクリプト内で動かす)
 def Pytwitter_main():
     # プログラム終了フラグ
     Escape = False
+    console_clear()
 
     for (index, value) in enumerate(cmd_list):
         cmd_list_mes.append(" {0:<2}: {1}".format(index + 1, value))
@@ -385,19 +395,13 @@ def Pytwitter_main():
         print("何をしますか?")
         cmd = input(termname)
         # 入力されたコマンドがリストに存在するか
-        if cmd in cmd_list:
-            # コンソール画面の消去
-            # OSの判定
-            if os.name == "nt":
-                os.system("CLS")
-            else:
-                os.system("clear")
-
+        if cmd in cmd_list or cmd == "":
+            console_clear()
             # コマンドの実行
             if cmd == cmd_list[0]:
                 tweet()
             elif cmd == cmd_list[1]:
-                str_id = get_follow_requests()
+                str_id = get_follow_request_uid()
                 name_list = get_user_info(str_id)
                 reply_follow_request(name_list)
             elif cmd == cmd_list[2]:
@@ -405,16 +409,12 @@ def Pytwitter_main():
             elif cmd == cmd_list[3]:
                 user_timeline()
             elif cmd == cmd_list[4]:
-                followers_list()
+                get_follower_list()
             elif cmd == cmd_list[5]:
                 search()
             elif cmd == cmd_list[6]:
                 place_trend()
             elif cmd == cmd_list[7]:
-                if os.name == "nt":
-                    os.system("CLS")
-                else:
-                    os.system("clear")
                 check_cmd_list()
             elif cmd == cmd_list[8]:
                 Escape = True
@@ -465,7 +465,7 @@ if __name__ == '__main__':
                "reply_follow_request",
                "home_timeline",
                "user_timeline",
-               "followers_list",
+               "get_follower_list",
                "search",
                "place_trend",
                "check",         # コマンドリストの確認
@@ -474,13 +474,13 @@ if __name__ == '__main__':
 
     # tweet()
     ## フォローリクエストに対してリプライを送る場合 ##
-    # str_id = get_follow_requests()
+    # str_id = get_follow_request_uid()
     # name_list = get_user_info(str_id)
     # reply_follow_request(name_list)
     ##############################################
     # home_timeline()
     # user_timeline()
-    # followers_list()
+    # get_followers_list()
     # search()
     # place_trend()
 
