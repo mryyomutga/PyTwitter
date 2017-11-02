@@ -4,12 +4,12 @@ twitterの分析プログラム
 PythonでTwitter APIへアクセスしていろいろやる
 
 ## TODO
-- トレンドの取得について機能改善(trendとvolumeだけは寂しい)
+- ~~トレンドの取得について機能改善(trendとvolumeだけは寂しい)~~
 - プロフィール変更できるようにする?
 - ~~繰り返し実行可能にするために、コマンド対応表を作成する~~(実装したものだけ)
 - ~~ツイートに"Pytwitterからの投稿"を組込む~~
 - パッケージ化なり外部からimportなりできるようにし、実行専用スクリプトにするとよし
-- Twitter機能を実装したメソッドをもう少し加える
+- ~~Twitter機能を実装したメソッドをもう少し加える~~
 - プログラム設計について考える
 - リファクタリング
 - GUIなど、PytwitterのUIを実装できるとGood!!
@@ -37,7 +37,7 @@ PythonでTwitter APIへアクセスしていろいろやる
 	TwitterAPIKey.jsonは
 	```json
 	{
-		"screen_name":"xxxx"
+		"screen_name":"xxxx",
 		"CK":"xxxxxxxxxxxxxxx",
 		"CS":"xxxxxxxxxxxxxxx",
 		"AT":"xxxxxxxxxxxxxxx",
@@ -54,10 +54,23 @@ PythonでTwitter APIへアクセスしていろいろやる
 
 
 ## ライブラリ
-- Requests-OAuthlib(OAuth認証、リクエスト...)
+- print_function
+
+	Python3系でのprint()をPython2系でも使えるようにするライブラリ
+- Requests-OAuthlib
+
+	OAuth認証、リクエストなどのライブラリ
 - json
 
+	JSON形式のデータを扱うライブラリ
+- os
+
+	OSの機能を使用するライブラリ
+
+	主にwindowsやlinuxの`cls`,`clear`を扱う
+
 ## 説明
+開発環境はPython3.6.3なのでそれ以外の環境で動作するかは保証しません(特にPython2系)
 - tweet関数でツイートする
 - research関数でキーワードから50件のツイートを取得
 - home_timeline関数で自分のタイムラインを取得
@@ -65,3 +78,4 @@ PythonでTwitter APIへアクセスしていろいろやる
 - place_trend関数で指定した地域のトレンドを取得
 - 指定したユーザーのフォロワーを取得
 - これらを繰り返し実行
+- フォローリクエストを出したユーザーに対してリプライを送る
