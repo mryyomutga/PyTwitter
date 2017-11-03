@@ -16,12 +16,12 @@ import os
 
 # Tweetを行う
 # ハッシュタグや@userなどを自動で検出する
-# Argument : None
+# Parameter : None
 # Return  : None
 def tweet():
     # メッセージリスト
     mes_list = list()
-    # mes_list.append("Pytwitterからの投稿")
+    mes_list.append("Pytwitterからの投稿")
     # ツイートフォーム
     print("つぶやく内容を入力してください(\"<END>\"で入力終了)")
     mes_list.append(input(termname))
@@ -38,25 +38,27 @@ def tweet():
 
     # OAuth認証をし、POSTメソッドでツイート
     session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
-    req = session.post(URL["tweet"], params=params)
+    res = session.post(URL["tweet"], params=params)
 
-    if req.status_code == 200:
-        print("<< Succeed!\n")
+    if res.status_code == 200:
+        print("<< Succeed! {0}\n".format(res.headers["status"]))
         # log.append(mes)
     # リクエスト失敗
     else:
-        print("<< ERROR! : {0}".format(req.status_code))
+        print("<< ERROR! : {0}".format(res.headers["status"]))
 
 # フォローリクエストの確認とユーザーIDを取得する
-# Argument : None
+# Parameter : None
 # Return  :
 # Succeed : Response["ids"](User_ID_list)
 # Error   : HTTP status code is not 200(-1) or Not follow requests(-2)
 def get_follow_request_uid():
     print("フォローリクエストを確認します")
     print("------------------------------------------------")
-    params = {"cursor":-1,
-              "stringify_ids":True}
+    params = {
+        "cursor":-1,
+        "stringify_ids":True
+        }
 
     # OAuth認証をし、GETメソッドでフォローリクエストの取得
     session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
@@ -66,10 +68,10 @@ def get_follow_request_uid():
     str_id = json.loads(res.text)
 
     if res.status_code == 200:
-        print("<< Succeed!")
+        print("<< Succeed! {0}".format(res.headers["status"]))
     # リクエスト失敗
     else:
-        print("<< ERROR! : {0}".format(res.status_code))
+        print("<< ERROR! : {0}".format(res.headers["status"]))
         return -1
 
     # フォローリクエストがない
@@ -87,12 +89,13 @@ def get_follow_request_uid():
     return str_id["ids"]
 
 # ユーザーIDからユーザー情報を取得する
-# Argument : User ID list
+# Parameter : User ID list
 # Return  :
 # Succeed : get user's Screen Name list(scr_name_list)
 # Error   : HTTP status code is not 200(-1)
 def get_user_info(str_id):
     print("フォローリクエストしているユーザーの情報を取得します")
+    print("------------------------------------------------")
 
     # リクエストに付与するパラメータの作成
     param_id = ",".join(str_id)
@@ -112,10 +115,10 @@ def get_user_info(str_id):
     userinfo = json.loads(res.text)
 
     if res.status_code == 200:
-        print("<< Succeed!\n")
+        print("<< Succeed! {0}".format(res.headers["status"]))
     # リクエスト失敗
     else:
-        print("<< ERROR! : {0}".format(res.status_code))
+        print("<< ERROR! : {0}".format(res.headers["status"]))
         return -1
 
     scr_name_list = list()
@@ -124,13 +127,13 @@ def get_user_info(str_id):
     print(" Get follow-request user\'s info")
     for (index, name) in enumerate(userinfo):
         scr_name_list.append(name["screen_name"])
-        print("{0:<3} : @{1}".format(index + 1, name["screen_name"]))
+        print(" {0:<3} : @{1}".format(index + 1, name["screen_name"]))
     print("+----------------------------------------------+")
 
     return scr_name_list
 
 # フォローリクエストしているユーザーに対してリプライを送る
-# Argument : Screen Name list
+# Parameter : Screen Name list
 # Return : None
 def reply_follow_request(name_list):
     print("フォローリクエストしているユーザーにリプライを送ります")
@@ -138,36 +141,38 @@ def reply_follow_request(name_list):
     # スクリーンネームのリストから1人ずつリプライする
     for user in name_list:
         # リプライメッセージの作成
-        reply_mes = "To :@{0}\nI checked your follow request.\nThank you follow requests.".format(user)
+        reply_mes = "To :@{0}\nI checked your follow request.\nThanks your follow requests.".format(user)
 
         # リクエストに付与するパラメータ
         params = {"status":reply_mes}
 
         # OAuth認証をし、POSTメソッドでツイート
         session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
-        req = session.post(URL["tweet"], params=params)
+        res = session.post(URL["tweet"], params=params)
 
         # リクエスト情報
-        # print(req.status_code)
-        # print(req.headers)
-        # print(req.text)
+        # print(res.status_code)
+        # print(res.headers)
+        # print(res.text)
 
-        if req.status_code == 200:
-            print("<< This message succeed to reply to @{0}!!".format(user))
+        if res.status_code == 200:
+            print("<< {0}\nThis message succeed to reply to @{1}!!".format(res.headers["status"], user))
         # すでに同一のリプライメッセージを送信していた場合
-        elif req.status_code == 403:
-            print("<< ERROR! : {0}".format(req.status_code))
+        elif res.status_code == 403:
+            print("<< ERROR! : {0}".format(res.headers["status"]))
             print("I wanted to reply to @{0}.".format(user))
             print("But, this reply message already exists the same reply message. :(")
         # リクエスト失敗
         else:
-            print("<< ERROR! : {0}".format(req.status_code))
+            print("<< ERROR! : {0}".format(res.headers["status"]))
 
         print("+----------------------------------------------+")
 
 # 自分のタイムラインを取得する
-# Argument : None
-# Return  : get home timeline(timelines)
+# Parameter : None
+# Return  :
+# Succeed : get home timeline(timelines)
+# Error   : HTTP status code is not 200(-1)
 def home_timeline():
     print("自分のタイムラインを取得します")
     print(termname)
@@ -184,7 +189,7 @@ def home_timeline():
     timelines = json.loads(res.text)
 
     if res.status_code == 200:
-        print("<< Succeed!")
+        print("<< Succeed! {0}".format(res.headers["status"]))
         for timeline in timelines:
             print("+----------------------------------------------+")
             mes = " @{0}: {1}\n created at {2}\n {3}".format(
@@ -196,24 +201,28 @@ def home_timeline():
             print(mes)
             # log.append(message)
         print("+----------------------------------------------+")
+        return timelines
     # リクエスト失敗
     else:
-        print("<< ERROR! : {0}".format(res.status_code))
-
-    return timelines
+        print("<< ERROR! : {0}".format(res.headers["status"]))
+        return -1
 
 # 指定したscreen_nameのタイムラインを取得
-# Argument : None
-# Return  : get target user's timeline(timelines)
+# Parameter : None
+# Return  :
+# Succeed : get target user's timeline(timelines)
+# Error   : HTTP status code is not 200(-1)
 def user_timeline():
         print("指定したユーザーのタイムラインを取得します")
-        print("@screen_nameを入力してください(@は抜いてね)")
+        print("screen_nameを入力してください")
         user = input(termname)
         print("------------------------------------------------")
 
         # リクエストに付与するパラメータ
-        params = {"screen_name":user,
-                  "count":50}
+        params = {
+            "screen_name":user,
+            "count":50
+            }
 
         # OAuth認証をし、GETメソッドでユーザーのタイムラインを取得
         session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
@@ -223,7 +232,7 @@ def user_timeline():
         timelines = json.loads(res.text)
 
         if res.status_code == 200:
-            print("<< Succeed!")
+            print("<< Succeed! {0}".format(res.headers["status"]))
             for timeline in timelines:
                 print("+----------------------------------------------+")
                 mes = " @{0}: {1}\n created at {2}\n {3}".format(
@@ -235,26 +244,75 @@ def user_timeline():
                 print(mes)
                 # log.append(message)
             print("+----------------------------------------------+")
+            return timelines
         # リクエスト失敗
         else:
-            print("<< ERROR! : {0}".format(res.status_code))
+            print("<< ERROR! : {0}".format(res.headers["status"]))
+            return -1
 
-        return timelines
-
-# 指定したユーザーのフォロワーを取得する
-# Argument : None
-# Return  : get user's followers list(followers)
-def get_follower_list():
-    print("指定したユーザーの最新のフォロワーを200人取得します")
-    print("@screen_nameを入力してください(@は抜いてね)")
-    user = input(termname)
+# 指定したユーザーのフォローを取得する
+# Parameter : None
+# Return  :
+# Succeed : get user's friends list(friends)
+# Error   : HTTP status code is not 200(-1)
+def get_friends():
+    print("指定したユーザーの最新のフォローを200人取得します")
+    print("screen_nameを入力してください")
+    user = input(termname + "@")
     print("------------------------------------------------")
 
     # リクエストに付与するパラメータ
     params = {
         "screen_name":user,
         "count":200
-    }
+        }
+
+    # OAuth認証をし、GETメソッドでフォローを取得
+    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    res = session.get(URL["friends_list"], params = params)
+
+    # レスポンスをJSON形式に変換
+    friends = json.loads(res.text)
+    print(res.headers)
+    if res.status_code == 200:
+        print("<< Succeed! {0}".format(res.headers["status"]))
+        for friend in friends["users"]:
+            print("+----------------------------------------------+")
+            mes = " @{0}: {1}\n Created at {2}\n Friends: {3}\n Followers: {4}\n Location: {5}\n URL: {6}\n {7} tweet".format(
+                friend["screen_name"],
+                friend["name"],
+                friend["created_at"],
+                friend["friends_count"],
+                friend["followers_count"],
+                friend["location"],
+                friend["url"],
+                friend["statuses_count"]
+                )
+            print(mes)
+            # log.append(mes)
+        print("+----------------------------------------------+")
+        return friends
+    # リクエスト失敗
+    else:
+        print("<< ERROR! : {0}".format(res.headers["status"]))
+        return -1
+
+# 指定したユーザーのフォロワーを50人取得する
+# Parameter : None
+# Return  :
+# Succeed : get user's followers list(followers)
+# Error   : HTTP status code is not 200(-1)
+def get_followers():
+    print("指定したユーザーの最新のフォロワーを50人取得します")
+    print("screen_nameを入力してください")
+    user = input(termname + "@")
+    print("------------------------------------------------")
+
+    # リクエストに付与するパラメータ
+    params = {
+        "screen_name":user,
+        "count":50                  # countはTwitter APIに投げる際、取得人数を指定する(1~200)
+        }
 
     # OAuth認証をし、GETメソッドでフォロワーを取得
     session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
@@ -264,15 +322,15 @@ def get_follower_list():
     followers = json.loads(res.text)
 
     if res.status_code == 200:
-        print("<< Succeed!")
+        print("<< Succeed! {0}".format(res.headers["status"]))
         for follower in followers["users"]:
             print("+----------------------------------------------+")
-            mes = " @{0}: {1}\n Created at {2}\n Followers: {3}\n Friends: {4}\n Location: {5}\n URL: {6}\n {7} tweet".format(
+            mes = " @{0}: {1}\n Created at {2}\n Friends: {3}\n Followers: {4}\n Location: {5}\n URL: {6}\n {7} tweet".format(
                 follower["screen_name"],
                 follower["name"],
                 follower["created_at"],
-                follower["followers_count"],
                 follower["friends_count"],
+                follower["followers_count"],
                 follower["location"],
                 follower["url"],
                 follower["statuses_count"]
@@ -280,25 +338,90 @@ def get_follower_list():
             print(mes)
             # log.append(mes)
         print("+----------------------------------------------+")
+        return followers
     # リクエスト失敗
     else:
-        print("<< ERROR! : {0}".format(req.status_code))
+        print("<< ERROR! : {0}".format(res.headers["status"]))
+        return -1
 
-    return followers
+# 指定したユーザーの全フォロワーを取得する(非推奨)
+# Parameter : None
+# Return  :
+# Succeed : get user's followers list(followers_list)
+# Error   : HTTP status code is not 200(-1)
+# Note    : リクエスト制限に関する処理をしていないため、フォロワーがたくさんいるアカウントを指定した場合
+#           制限回数に達した状態でリクエストして例外が発生してしまう
+def get_all_followers():
+    # リクエストにcursorを指定して、どのページの情報をもらうかを制御
+    # cursor = -1のとき先頭ページを指定する
+    cursor = -1
+
+    print("指定したユーザーの最新のフォロワーを50人取得します")
+    print("screen_nameを入力してください")
+    # 対象とするscreen_nameの入力
+    user = input(termname + "@")
+    print("------------------------------------------------")
+
+    while cursor != "0":
+        # リクエストに付与するパラメータ
+        params = {
+            "screen_name":user,
+            "count":200,
+            "cursor":cursor
+            }
+
+        # OAuth認証をし、GETメソッドで全フォロワーを取得
+        session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+        res = session.get(URL["followers_list"], params = params)
+
+        # レスポンスをJSON形式に変換
+        followers = json.loads(res.text)
+        # 先頭ページ返却用変数
+        if cursor == -1:
+            followers_list = json.loads(res.text)
+
+        if res.status_code == 200:
+            print("<< Succeed! {0}".format(res.headers["status"]))
+            for follower in followers["users"]:
+                print("+----------------------------------------------+")
+                mes = " @{0}: {1}\n Created at {2}\n Friends: {3}\n Followers: {4}\n Location: {5}\n URL: {6}\n {7} tweet".format(
+                    follower["screen_name"],
+                    follower["name"],
+                    follower["created_at"],
+                    follower["friends_count"],
+                    follower["followers_count"],
+                    follower["location"],
+                    follower["url"],
+                    follower["statuses_count"]
+                    )
+                print(mes)
+                # log.append(mes)
+            print("+----------------------------------------------+")
+            cursor = followers["next_cursor_str"]
+        # リクエスト失敗
+        else:
+            print("<< ERROR! : {0}".format(res.headers["status"]))
+            return -1
+
+    return followers_list
 
 # ツイート内容に対してキーワード検索を行う
-# Argument : None
-# Return  : get tweets info(tweets)
+# Parameter : None
+# Return  :
+# Succeed : get tweets info(tweets)
+# Error   : HTTP status code is not 200(-1)
 def search():
     global log
     print("検索する内容を入力してください")
     keyword = input(termname)
-
+    print("------------------------------------------------")
     # リクエストに付与するパラメータ
-    params = {"q":keyword,
-              "locale":"ja",
-              "result_type":"recent",
-              "count":50}
+    params = {
+        "q":keyword,
+        "locale":"ja",
+        "result_type":"recent",
+        "count":100
+        }
 
     # OAuth認証をし、GETメソッドでキーワード検索
     session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
@@ -308,7 +431,7 @@ def search():
     tweets = json.loads(res.text)
 
     if res.status_code == 200:
-        print("<< Succeed!")
+        print("<< Succeed! {0}".format(res.headers["status"]))
         for tweet in tweets["statuses"]:
             print("+----------------------------------------------+")
             mes = " @{0}: {1}\n Created at {2}\n {3}".format(
@@ -320,22 +443,26 @@ def search():
             print(mes)
             # log.append(mes)
         print("+----------------------------------------------+")
+        return tweets
     # リクエスト失敗
     else:
-        print("<< ERROR! : {0}".format(req.status_code))
+        print("<< ERROR! : {0}".format(res.headers["status"]))
+        return -1
 
-        return tweets
-
-# 地域のトレンドを取得
-# Argument : None
-# Return  : get target place trends(trends)
+# 地域のトレンドを取得する
+# Parameter : None
+# Return  :
+# Succeed : get target place trends(trends)
+# Error   : HTTP status code is not 200(-1)
 def place_trend():
     print("地域を指定してください")
     place = input(termname)
     print("------------------------------------------------")
 
     # リクエストに付与するパラメータ
-    params = {"id":place_code[place]["woeid"]}
+    params = {
+        "id":place_code[place]["woeid"]
+        }
 
     # OAuth認証をし、GETメソッドで地域のトレンドを取得
     session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
@@ -345,7 +472,7 @@ def place_trend():
     trends = json.loads(res.text)
 
     if res.status_code == 200:
-        print("<< Succeed!")
+        print("<< Succeed! {0}".format(res.headers["status"]))
         # 他のJSONと少し違うせいかtrends[0]["trends"]じゃないと取得できない
         for trend in trends[0]["trends"]:
             print("+----------------------------------------------+")
@@ -357,11 +484,27 @@ def place_trend():
             print(mes)
             # log.append(message)
         print("+----------------------------------------------+")
+        return trends
     # リクエスト失敗
     else:
-        print("<< ERROR! : {0}".format(res.status_code))
+        print("<< ERROR! : {0}".format(res.headers["status"]))
+        return -1
 
-    return trends
+# Twitter APIのレートリミットを確認する
+def check_rate_limit():
+    print("あなたのTwitter APIのレートリミットを取得します")
+
+    # OAuth認証をし、GETメソッドで地域のトレンドを取得
+    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    res = session.get(URL["rate_limit_status"])
+
+    if res.status_code == 200:
+        print("<< Succeed! {0}".format(res.headers["status"]))
+        with open("Rate_limit.json", "w") as f:
+            f.write(res.text)
+    # リクエスト失敗
+    else:
+        print("<< ERROR! : {0}".format(res.headers["status"]))
 
 # cmd_list_mesを表示する関数
 def check_cmd_list():
@@ -409,20 +552,24 @@ def Pytwitter_main():
             elif cmd == cmd_list[3]:
                 user_timeline()
             elif cmd == cmd_list[4]:
-                get_follower_list()
+                get_friends()
             elif cmd == cmd_list[5]:
-                search()
+                get_followers()
             elif cmd == cmd_list[6]:
-                place_trend()
+                get_all_followers()
             elif cmd == cmd_list[7]:
-                check_cmd_list()
+                search()
             elif cmd == cmd_list[8]:
+                place_trend()
+            elif cmd == cmd_list[9]:
+                check_cmd_list()
+            elif cmd == cmd_list[10]:
                 Escape = True
         else:
             print("{0}はコマンドじゃないよ".format(cmd))
 
-    print("Thank you for using Pytwitter")
-    print("This code is in https://github.com/mryyomutga/Pytwitter")
+    print("Thank you for using \033[33mPytwitter\033[0m")
+    print("This code is in \033[32mhttps://github.com/mryyomutga/Pytwitter\033[0m")
     print("{0}, Good Bye!!".format(name))
 
 # importされた場合は呼ばれない
@@ -437,9 +584,11 @@ if __name__ == '__main__':
         "users_lookup":"https://api.twitter.com/1.1/users/lookup.json",
         "home_timeline":"https://api.twitter.com/1.1/statuses/home_timeline.json",
         "user_timeline":"https://api.twitter.com/1.1/statuses/user_timeline.json",
+        "friends_list":"https://api.twitter.com/1.1/friends/list.json",
         "followers_list":"https://api.twitter.com/1.1/followers/list.json",
         "search":"https://api.twitter.com/1.1/search/tweets.json",
-        "place_trend":"https://api.twitter.com/1.1/trends/place.json"
+        "place_trend":"https://api.twitter.com/1.1/trends/place.json",
+        "rate_limit_status":"https://api.twitter.com/1.1/application/rate_limit_status.json"
     }
 
     # 取得したツイートのログリスト
@@ -455,7 +604,7 @@ if __name__ == '__main__':
         place_code = json.load(f)
 
     # アカウント名を表示する場合
-    name = "@" + myinfo["screen_name"]
+    name = "\033[36m@" + myinfo["screen_name"] + "\033[0m"
     termname = name + " >> "
     # termname = ">> "
 
@@ -465,7 +614,9 @@ if __name__ == '__main__':
                "reply_follow_request",
                "home_timeline",
                "user_timeline",
-               "get_follower_list",
+               "get_friends",
+               "get_followers",
+               "get_all_followers",
                "search",
                "place_trend",
                "check",         # コマンドリストの確認

@@ -18,8 +18,10 @@ PythonでTwitter APIを扱うライブラリとして`tweepy`や`python-twitter`
 | reply_follow_request   | フォローリクエストしているユーザーに対してリプライを送る |
 | home_timeline          | 自分のタイムラインを取得する |
 | user_timeline          | 指定したユーザーのタイムラインを取得する |
-| get_follower_list      | 指定したユーザーのフォロワーを取得する |
-| search                 | キーワードから100件のツイートを取得 |
+| get_friends            | 指定したユーザーの最新のフォローを50人取得する |
+| get_followers          | 指定したユーザーの最新のフォロワーを50人取得する |
+| get_all_followers      | 指定したユーザーの全フォロワーを取得する(非推奨) |
+| search                 | キーワードから100件のツイートを取得する |
 | place_trend            | 指定した地域のトレンドを取得する |
 
 - フォローリクエストを出したユーザーに対してリプライを送る(相手には見えない)
@@ -35,6 +37,10 @@ PythonでTwitter APIを扱うライブラリとして`tweepy`や`python-twitter`
 	1. 与える引数や前回のPytwitter実行終了時までにフォロワーを取得してログに記録する。
 
 	1. コマンド実行時に現在のフォロワーとログに記録されているフォロワーの差分から自動フォローとリプライを送る相手を決定する
+
+- `get_all_followers`を呼ぶ際、指定したユーザーのフォロワーが多いとTwitterAPIのアクセス制限に引っかかる
+
+	- `https://api.twitter.com/1.1/application/rate_limit_status.json`にリクエストして制限やアクセス回数などを取得し、適切にwaitをかけるなりする
 
 ## 必要なこと
 ライブラリに`Requests_OAuthlib`を用いるため、それのインストール
@@ -96,6 +102,7 @@ PythonでTwitter APIを扱うライブラリとして`tweepy`や`python-twitter`
 
 ## TODO
 - ~~トレンドの取得について機能改善(trendとvolumeだけは寂しい)~~
+- ~~色を付けて見やすくする~~
 - プロフィール変更できるようにする(要調査)
 - ~~繰り返し実行可能にするために、コマンド対応表を作成する~~(実装したものだけ)
 - ~~ツイートに"Pytwitterからの投稿"を組込む~~
