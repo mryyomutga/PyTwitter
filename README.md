@@ -13,9 +13,11 @@ PythonでTwitter APIを扱うライブラリとして`tweepy`や`python-twitter`
 | Method                 | Discription |
 |:-----------------------|:------------|
 | tweet                  | ツイートする |
+| get_user_info          | 指定したユーザーの情報を取得する |
 | get_follow_request_uid | フォローリクエストの確認とユーザーIDを取得する |
-| get_user_info          | ユーザーIDからユーザー情報を取得する |
+| get_req_user_info      | ユーザーIDからユーザー情報を取得する |
 | reply_follow_request   | フォローリクエストしているユーザーに対してリプライを送る |
+| create_friend_FolReq   | フォローリクエストしたユーザーをフォローする |
 | home_timeline          | 自分のタイムラインを取得する |
 | user_timeline          | 指定したユーザーのタイムラインを取得する |
 | get_friends            | 指定したユーザーの最新のフォローを50人取得する |
@@ -23,6 +25,9 @@ PythonでTwitter APIを扱うライブラリとして`tweepy`や`python-twitter`
 | get_all_followers      | 指定したユーザーの全フォロワーを取得する(非推奨) |
 | search                 | キーワードから100件のツイートを取得する |
 | place_trend            | 指定した地域のトレンドを取得する |
+| change_profile         | プロフィールを変更する |
+
+Twitter APIについて詳しい情報は[ここから](https://developer.twitter.com/en.html "Twitter Developer Platform")
 
 - フォローリクエストを出したユーザーに対してリプライを送る(相手には見えない)
 - Pytwitter.py内にある`Pytwitter_main`を呼ぶと、Pytwitterシェルが起動し、実装した機能を使用することができる
@@ -103,7 +108,7 @@ PythonでTwitter APIを扱うライブラリとして`tweepy`や`python-twitter`
 ## TODO
 - ~~トレンドの取得について機能改善(trendとvolumeだけは寂しい)~~
 - ~~色を付けて見やすくする~~
-- プロフィール変更できるようにする(要調査)
+- ~~プロフィール変更できるようにする(要調査)~~
 - ~~繰り返し実行可能にするために、コマンド対応表を作成する~~(実装したものだけ)
 - ~~ツイートに"Pytwitterからの投稿"を組込む~~
 - パッケージ化なり外部からimportなりできるようにし、実行専用スクリプトにするとよし
