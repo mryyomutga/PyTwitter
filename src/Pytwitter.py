@@ -3,19 +3,19 @@
 # Author    : Ryoga Miyamoto
 # Outline   : PythonでTwitterAPIにアクセスしていろいろやる
 # Env       : Python3.6.3
-# Twitter APIのラッパーライブラリ(tweepy, python-twitter...)があるが直接APIを呼び出す
+# Repository: https://github.com/mryyomutga/PyTwitter
 
-# Python2でPython3用print()を使用するモジュール
+# Python2でPython3のprint()を使用するモジュール
 from __future__ import print_function
 # Requests,OAuth認証用ライブラリ(たぶんrequestsモジュールが内部にある)
 from requests_oauthlib import OAuth1Session
 # json形式データを扱うライブラリ
 import json
-# 画面消去するos.system("cls")
+# 画面消去するCLS、clearを呼び出す
 import os
 
 # Tweetを行う
-# ハッシュタグや@userなどを自動で検出する
+# #tag @name http://xxx を自動で検出する
 # Parameter : None
 # Return  : None
 def tweet():
@@ -24,25 +24,25 @@ def tweet():
     mes_list.append("Pytwitterからの投稿")
     # ツイートフォーム
     print("つぶやく内容を入力してください(\"<END>\"で入力終了)")
+    print("<<" + "-" * 70)      # 56
     mes_list.append(input(termname))
     while mes_list[-1] != "<END>":
         mes_list.append(input(termname))
 
-    print("------------------------------------------------")
-    # <END>を取り除く
+    print("-" * 70 + ">>")
+
+    # 投稿文から<END>を取り除く
     mes_list.pop()
     mes = "\n".join(mes_list)
 
     # リクエストに付与するパラメータ
     params = {"status":mes}
 
-    # OAuth認証をし、POSTメソッドでツイート
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # POSTメソッドでツイート
     res = session.post(URL["tweet"], params=params)
 
     if res.status_code == 200:
-        print("<< Succeed! {0}\n".format(res.headers["status"]))
-        # log.append(mes)
+        print("<< Succeed! {0}".format(res.headers["status"]))
     # リクエスト失敗
     else:
         print("<< ERROR! : {0}".format(res.headers["status"]))
@@ -54,7 +54,7 @@ def tweet():
 # Error   : HTTP status code is not 200(-1)
 def get_user_info(user_name=""):
     print("指定したユーザーの情報を取得します")
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
     # screen_nameを受け取っていない場合
     if user_name == "":
         user_name = input(termname + "@")
@@ -64,30 +64,35 @@ def get_user_info(user_name=""):
         "screen_name":user_name
     }
 
-    # OAuth認証をし、GETメソッドでユーザー情報を取得する
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドでユーザー情報を取得する
     res = session.get(URL["user_show"], params=params)
 
+    # レスポンスをJSON形式に変換
     info = json.loads(res.text)
 
     # レスポンス情報(debug)
     # print(res.text)
 
     if res.status_code == 200:
-        print("<< Succeed! {0}\n".format(res.headers["status"]))
-        print("+----------------------------------------------+")
-        mes = " @{0}: {1}\n Created at {2}\n Location: {3}\n {4}\n Followed {5}\n Following {6}\n {7} tweet\n".format(
+        print("<< Succeed! {0}".format(res.headers["status"]))
+        # 自己紹介文のフォーマット
+        sentence = info["description"]
+        description = "\n  ".join([sentence[i:i+34] for i in range(0, len(sentence), 34)])
+        print("<<" + "-" * 70)
+        mes = " @{0} : {1}\n Created at  {2}\n ID       : {3}\n Location : {4}\n\n  {5}\n\n Followers : {6}\n Friends   : {7}\n {8} tweet\n".format(
             info["screen_name"],
             info["name"],
             info["created_at"],
+            info["id"],
             info["location"],
-            info["description"],
+            description,
+            # info["description"],
             info["followers_count"],
             info["friends_count"],
             info["statuses_count"]
             )
-        # log.append(mes)
         print(mes)
+        print("<<" + "-" * 68 + ">>")
         return info
     # リクエスト失敗
     else:
@@ -101,14 +106,13 @@ def get_user_info(user_name=""):
 # Error   : HTTP status code is not 200(-1) or Not follow requests(-2)
 def get_follow_request_uid():
     print("フォローリクエストを確認します")
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
     params = {
         "cursor":-1,
         "stringify_ids":True
         }
 
-    # OAuth認証をし、GETメソッドでフォローリクエストの取得
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドでフォローリクエストの取得
     res = session.get(URL["friendships_incoming"], params=params)
 
     # レスポンスをJSON形式に変換
@@ -127,11 +131,12 @@ def get_follow_request_uid():
         return -2
 
     # フォローリクエストを出したIDの一覧
-    print("+----------------------------------------------+")
+    print("<<" + "-" * 70)
     print(" Get follow-request user's id")
     for (index, usr_id) in enumerate(str_id["ids"]):
         print(" {0:<3} : {1}".format(index + 1, usr_id))
-    print("+----------------------------------------------+")
+
+    print("<<" + "-" * 68 + ">>")
 
     return str_id["ids"]
 
@@ -142,7 +147,7 @@ def get_follow_request_uid():
 # Error   : HTTP status code is not 200(-1)
 def get_req_user_info(str_id):
     print("フォローリクエストしているユーザーの情報を取得します")
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # リクエストに付与するパラメータの作成
     param_id = ",".join(str_id)
@@ -150,11 +155,10 @@ def get_req_user_info(str_id):
     # リクエストに付与するパラメータ
     params = {"user_id":param_id}
 
-    # OAuth認証をし、GETメソッドでユーザー情報の取得
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドでユーザー情報の取得
     res = session.get(URL["users_lookup"], params=params)
 
-    # リクエスト情報
+    # レスポンス情報
     # print(res.status_code)
     # print(res.headers)
 
@@ -170,12 +174,13 @@ def get_req_user_info(str_id):
 
     scr_name_list = list()
     # User IDから取得したScreen Nameの一覧
-    print("+----------------------------------------------+")
+    print("<<" +"-" * 70)
     print(" Get follow-request user\'s info")
     for (index, name) in enumerate(userinfo):
         scr_name_list.append(name["screen_name"])
         print(" {0:<3} : @{1}".format(index + 1, name["screen_name"]))
-    print("+----------------------------------------------+")
+
+    print("<<" + "-" * 68 + ">>")
 
     return scr_name_list
 
@@ -184,7 +189,7 @@ def get_req_user_info(str_id):
 # Return : None
 def reply_follow_request(name_list):
     print("フォローリクエストしているユーザーにリプライを送ります")
-    print("+----------------------------------------------+")
+    print("-" * 70 + ">>")
     # スクリーンネームのリストから1人ずつリプライする
     for user in name_list:
         # リプライメッセージの作成
@@ -193,8 +198,7 @@ def reply_follow_request(name_list):
         # リクエストに付与するパラメータ
         params = {"status":reply_mes}
 
-        # OAuth認証をし、POSTメソッドでツイート
-        session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+        # POSTメソッドでツイート
         res = session.post(URL["tweet"], params=params)
 
         # レスポンス情報
@@ -213,7 +217,7 @@ def reply_follow_request(name_list):
         else:
             print("<< ERROR! : {0}".format(res.headers["status"]))
 
-        print("+----------------------------------------------+")
+        print("<<" + "-" * 68 + ">>")
 
 # フォローリクエストしたユーザーをフォローする
 # ※フォローリクエストの承認はできない
@@ -221,12 +225,13 @@ def reply_follow_request(name_list):
 # Return  : None
 def create_friend_FolReq(name_list):
     print("あなたにフォローリクエストをしているユーザーをフォローします")
+    print("-" * 70 + ">>")
 
     for user in name_list:
         params = {"screen_name":user}
         print(user)
         # OAuth認証をし、POSTメソッドでフォローする
-        session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+
         res = session.post(URL["create_friendship"], params=params)
 
         if res.status_code == 200:
@@ -243,13 +248,12 @@ def create_friend_FolReq(name_list):
 def home_timeline():
     print("自分のタイムラインを取得します")
     print(termname)
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # リクエストに付与するパラメータ
     params = {"count":50}
 
-    # OAuth認証をし、GETメソッドで自分のタイムラインを取得
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドで自分のタイムラインを取得
     res = session.get(URL["home_timeline"], params=params)
 
     # レスポンスをJSON形式に変換
@@ -258,16 +262,22 @@ def home_timeline():
     if res.status_code == 200:
         print("<< Succeed! {0}".format(res.headers["status"]))
         for timeline in timelines:
-            print("+----------------------------------------------+")
-            mes = " @{0}: {1}\n created at {2}\n {3}".format(
+            # ツイートのフォーマット
+            sentence = timeline["text"].replace("\n","")
+            tweet = "\n  ".join([sentence[i:i+34] for i in range(0, len(sentence), 34)])
+
+            print("<<" + "-" * 70)
+            mes = " @{0} : {1}\n created at  {2}\n ID : {3}\n\n  {4}".format(
                 timeline["user"]["screen_name"],
                 timeline["user"]["name"],
                 timeline["created_at"],
-                timeline["text"]
+                timeline["id"],
+                tweet
+                # timeline["text"]
                 )
             print(mes)
-            # log.append(message)
-        print("+----------------------------------------------+")
+
+        print("<<" + "-" * 68 + ">>")
         return timelines
     # リクエスト失敗
     else:
@@ -282,8 +292,8 @@ def home_timeline():
 def user_timeline():
         print("指定したユーザーのタイムラインを取得します")
         print("screen_nameを入力してください")
-        user = input(termname + "@  ")
-        print("------------------------------------------------")
+        user = input(termname + "@ ")
+        print("-" * 70 + ">>")
 
         # リクエストに付与するパラメータ
         params = {
@@ -291,8 +301,7 @@ def user_timeline():
             "count":50
             }
 
-        # OAuth認証をし、GETメソッドでユーザーのタイムラインを取得
-        session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+        # GETメソッドでユーザーのタイムラインを取得
         res = session.get(URL["user_timeline"], params=params)
 
         # レスポンスをJSON形式に変換
@@ -301,16 +310,22 @@ def user_timeline():
         if res.status_code == 200:
             print("<< Succeed! {0}".format(res.headers["status"]))
             for timeline in timelines:
-                print("+----------------------------------------------+")
-                mes = " @{0}: {1}\n created at {2}\n {3}".format(
+                # ツイートのフォーマット
+                sentence = timeline["text"].replace("\n","")
+                tweet = "\n  ".join([sentence[i:i+34] for i in range(0, len(sentence), 34)])
+
+                print("<<" + "-" * 70)
+                mes = " @{0} : {1}\n created at {2}\n ID : {3}\n\n  {4}\n".format(
                     timeline["user"]["screen_name"],
                     timeline["user"]["name"],
                     timeline["created_at"],
-                    timeline["text"]
+                    timeline["id"],
+                    tweet
+                    # timeline["text"]
                     )
                 print(mes)
-                # log.append(message)
-            print("+----------------------------------------------+")
+
+            print("<<" + "-" * 68 + ">>")
             return timelines
         # リクエスト失敗
         else:
@@ -326,7 +341,7 @@ def get_friends():
     print("指定したユーザーの最新のフォローを200人取得します")
     print("screen_nameを入力してください")
     user = input(termname + "@")
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # リクエストに付与するパラメータ
     params = {
@@ -334,32 +349,36 @@ def get_friends():
         "count":200
         }
 
-    # OAuth認証をし、GETメソッドでフォローを取得
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドでフォローを取得
     res = session.get(URL["friends_list"], params = params)
 
     # レスポンスをJSON形式に変換
     friends = json.loads(res.text)
-    # レスポンスヘッダの解析(debug)
+    # レスポンスヘッダ(debug)
     # print(res.headers)
 
     if res.status_code == 200:
         print("<< Succeed! {0}".format(res.headers["status"]))
         for friend in friends["users"]:
-            print("+----------------------------------------------+")
-            mes = " @{0}: {1}\n Created at {2}\n Friends: {3}\n Followers: {4}\n Location: {5}\n URL: {6}\n {7} tweet".format(
+            print("<<" + "-" * 70)
+            # 自己紹介文のフォーマット
+            sentence = friend["description"].replace("\n","")
+            discription = "\n  ".join([sentence[i:i+34] for i in range(0, len(sentence), 34)])
+            mes = " @{0} : {1}\n Created at {2}\n ID       : {3}\n Location : {4}\n URL      : {5}\n\n  {6}\n\n Friends   : {7}\n Followers : {8}\n {9} tweet".format(
                 friend["screen_name"],
                 friend["name"],
                 friend["created_at"],
-                friend["friends_count"],
-                friend["followers_count"],
+                friend["id"],
                 friend["location"],
                 friend["url"],
+                discription,
+                friend["friends_count"],
+                friend["followers_count"],
                 friend["statuses_count"]
                 )
             print(mes)
-            # log.append(mes)
-        print("+----------------------------------------------+")
+
+        print("<<" + "-" * 68 + ">>")
         return friends
     # リクエスト失敗
     else:
@@ -375,7 +394,7 @@ def get_followers():
     print("指定したユーザーの最新のフォロワーを50人取得します")
     print("screen_nameを入力してください")
     user = input(termname + "@")
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # リクエストに付与するパラメータ
     params = {
@@ -383,8 +402,7 @@ def get_followers():
         "count":50                  # countはTwitter APIに投げる際、取得人数を指定する(1~200)
         }
 
-    # OAuth認証をし、GETメソッドでフォロワーを取得
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドでフォロワーを取得
     res = session.get(URL["followers_list"], params = params)
 
     # レスポンスをJSON形式に変換
@@ -393,20 +411,25 @@ def get_followers():
     if res.status_code == 200:
         print("<< Succeed! {0}".format(res.headers["status"]))
         for follower in followers["users"]:
-            print("+----------------------------------------------+")
-            mes = " @{0}: {1}\n Created at {2}\n Friends: {3}\n Followers: {4}\n Location: {5}\n URL: {6}\n {7} tweet".format(
+            print("<<" + "-" * 70)
+            # 自己紹介文のフォーマット
+            sentence = follower["description"].replace("\n","")
+            discription = "\n  ".join([sentence[i:i+34] for i in range(0, len(sentence), 34)])
+            mes = " @{0} : {1}\n Created at {2}\n ID       : {3}\n Location : {4}\n URL      : {5}\n\n  {6}\n\n Friends   : {7}\n Followers : {8}\n {9} tweet".format(
                 follower["screen_name"],
                 follower["name"],
                 follower["created_at"],
-                follower["friends_count"],
-                follower["followers_count"],
+                follower["id"],
                 follower["location"],
                 follower["url"],
+                discription,
+                follower["friends_count"],
+                follower["followers_count"],
                 follower["statuses_count"]
                 )
             print(mes)
-            # log.append(mes)
-        print("+----------------------------------------------+")
+
+        print("<<" + "-" * 68 + ">>")
         return followers
     # リクエスト失敗
     else:
@@ -429,7 +452,7 @@ def get_all_followers():
     print("screen_nameを入力してください")
     # 対象とするscreen_nameの入力
     user = input(termname + "@")
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # 次のページがあるかどうか
     while cursor != "0":
@@ -440,8 +463,7 @@ def get_all_followers():
             "cursor":cursor
             }
 
-        # OAuth認証をし、GETメソッドで全フォロワーを取得
-        session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+        # GETメソッドで全フォロワーを取得
         res = session.get(URL["followers_list"], params = params)
 
         # レスポンスをJSON形式に変換
@@ -453,20 +475,25 @@ def get_all_followers():
         if res.status_code == 200:
             print("<< Succeed! {0}".format(res.headers["status"]))
             for follower in followers["users"]:
-                print("+----------------------------------------------+")
-                mes = " @{0}: {1}\n Created at {2}\n Friends: {3}\n Followers: {4}\n Location: {5}\n URL: {6}\n {7} tweet".format(
+                print("<<" + "-" * 70)
+                # 自己紹介文のフォーマット
+                sentence = follower["description"].replace("\n","")
+                discription = "\n  ".join([sentence[i:i+34] for i in range(0, len(sentence), 34)])
+                mes = " @{0} : {1}\n Created at {2}\n ID       : {3}\n Location : {4}\n URL      : {5}\n\n  {6}\n\n Friends   : {7}\n Followers : {8}\n {9} tweet".format(
                     follower["screen_name"],
                     follower["name"],
                     follower["created_at"],
-                    follower["friends_count"],
-                    follower["followers_count"],
+                    follower["id"],
                     follower["location"],
                     follower["url"],
+                    discription,
+                    follower["friends_count"],
+                    follower["followers_count"],
                     follower["statuses_count"]
                     )
                 print(mes)
-                # log.append(mes)
-            print("+----------------------------------------------+")
+
+            print("<<" + "-" * 68 + ">>")
             cursor = followers["next_cursor_str"]
         # リクエスト失敗
         else:
@@ -483,7 +510,7 @@ def get_all_followers():
 def search():
     print("検索する内容を入力してください")
     keyword = input(termname)
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # リクエストに付与するパラメータ
     params = {
@@ -493,8 +520,7 @@ def search():
         "count":100
         }
 
-    # OAuth認証をし、GETメソッドでキーワード検索
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドでキーワード検索
     res = session.get(URL["search"], params = params)
 
     # レスポンスをJSON形式に変換
@@ -503,16 +529,22 @@ def search():
     if res.status_code == 200:
         print("<< Succeed! {0}".format(res.headers["status"]))
         for tweet in tweets["statuses"]:
-            print("+----------------------------------------------+")
-            mes = " @{0}: {1}\n Created at {2}\n {3}".format(
+            # ツイートのフォーマット
+            sentence = tweet["text"].replace("\n","")
+            twe_mes = "\n  ".join([sentence[i:i+34] for i in range(0, len(sentence), 34)])
+
+            print("<<" + "-" * 70)
+            mes = " @{0} : {1}\n Created at {2}\n ID        : {3}\n\n  {4}\n".format(
                 tweet["user"]["screen_name"],
                 tweet["user"]["name"],
                 tweet["created_at"],
-                tweet["text"]
+                tweet["id"],
+                twe_mes
+                # tweet["text"]
                 )
             print(mes)
-            # log.append(mes)
-        print("+----------------------------------------------+")
+
+        print("<<" + "-" * 68 + ">>")
         return tweets
     # リクエスト失敗
     else:
@@ -527,15 +559,14 @@ def search():
 def place_trend():
     print("地域を指定してください")
     place = input(termname)
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # リクエストに付与するパラメータ
     params = {
         "id":place_code[place]["woeid"]
         }
 
-    # OAuth認証をし、GETメソッドで地域のトレンドを取得
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドで地域のトレンドを取得
     res = session.get(URL["place_trend"], params=params)
 
     # レスポンスをJSON形式に変換
@@ -545,15 +576,20 @@ def place_trend():
         print("<< Succeed! {0}".format(res.headers["status"]))
         # 他のJSONと少し違うせいかtrends[0]["trends"]じゃないと取得できない
         for trend in trends[0]["trends"]:
-            print("+----------------------------------------------+")
-            mes = " Trend: {0}\n URL: {1}\n Volume: {2}".format(
+            # URLのフォーマット
+            sentence = trend["url"]
+            head = "\n" + " " * 10
+            url = head.join([sentence[i:i+60] for i in range(0, len(sentence), 60)])
+
+            print("<<" + "-" * 70)
+            mes = " Trend  : {0}\n URL    : {1}\n Volume : {2}".format(
                 trend["name"],
-                trend["url"],
+                url,
+                # trend["url"],
                 trend["tweet_volume"]
                 )
             print(mes)
-            # log.append(message)
-        print("+----------------------------------------------+")
+        print("<<" + "-" * 68 + ">>")
         return trends
     # リクエスト失敗
     else:
@@ -582,14 +618,14 @@ def change_profile():
 
     print("プロフィールを変更します")
     print("変更しない場合は入力せずEnterキーを押してください")
-    print("URLは\"http://\"まで省略可能です")
+    print("URLは\"http://\"まで省略可能です\n")
 
     # 変更するパラメータの入力
     change_prof["name"]        = input(" Name        " + myprof["name"] + " >> ")
     change_prof["url"]         = input(" URL         " + myprof["url"] + " >> ")
     change_prof["location"]    = input(" Location    " + myprof["location"] + " >> ")
     change_prof["description"] = input(" Description " + myprof["description"] + "\n >> ")
-    print("------------------------------------------------")
+    print("-" * 70 + ">>")
 
     # 変更があったかを調べる
     for key, value in change_prof.items():
@@ -608,8 +644,7 @@ def change_profile():
         "skip_status":False
     }
 
-    # OAuth認証をし、POSTメソッドで変更する属性をAPIに投げる
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # POSTメソッドで変更する属性をAPIに投げる
     res = session.post(URL["update_profile"], params=params)
 
     # レスポンスをJSON形式に変換
@@ -617,16 +652,15 @@ def change_profile():
 
     if res.status_code == 200:
         print("<< Succeed! {0}".format(res.headers["status"]))
-        print("+----------------------------------------------+")
-        mes = " Name: {0}\n URL: {1}\n Location: {2}\n {3}".format(
+        print("<<" + "-" * 70)
+        mes = " Name     : {0}\n URL      : {1}\n Location : {2}\n {3}".format(
             prof["name"],
             prof["url"],
             prof["location"],
             prof["description"]
             )
         print(mes)
-        # log.append(message)
-        print("+----------------------------------------------+")
+        print("<<" + "-" * 68 + ">>")
         return prof
     # リクエスト失敗
     else:
@@ -636,13 +670,14 @@ def change_profile():
 # Twitter APIのレートリミットを確認する
 def check_rate_limit():
     print("あなたのTwitter APIのレートリミットを取得します")
+    print("-" * 70 + ">>")
 
-    # OAuth認証をし、GETメソッドで地域のトレンドを取得
-    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+    # GETメソッドで地域のトレンドを取得
     res = session.get(URL["rate_limit_status"])
 
     if res.status_code == 200:
         print("<< Succeed! {0}".format(res.headers["status"]))
+        print("<<" + "-" * 70)
         # ファイルにレートリミットを書き込む
         # with open("Rate_limit.json", "w") as f:
         #     f.write(res.text)
@@ -672,6 +707,7 @@ def Pytwitter_main():
     Escape = False
     console_clear()
 
+    # コマンドリストをフォーマットする
     for (index, value) in enumerate(cmd_list):
         cmd_list_mes.append(" {0:<2}: {1}".format(index + 1, value))
 
@@ -680,7 +716,7 @@ def Pytwitter_main():
 
     # Pytwitterの起動
     while Escape == False:
-        print("何をしますか?")
+        print("\n何をしますか?")
         cmd = input(termname)
         # 入力されたコマンドがリストに存在するか
         if cmd in cmd_list or cmd == "":
@@ -693,7 +729,8 @@ def Pytwitter_main():
             elif cmd == cmd_list[2]:
                 str_id = get_follow_request_uid()
                 name_list = get_req_user_info(str_id)
-                reply_follow_request(name_list)     # 相手に見えないため意味なし
+                # 相手に見えないため意味なし
+                reply_follow_request(name_list)
                 # create_friend_FolReq(name_list)
             elif cmd == cmd_list[3]:
                 home_timeline()
@@ -759,21 +796,24 @@ if __name__ == '__main__':
     termname = name + " >> "
     # termname = ">> "
 
+    # 取得したキーに対してOAuth認証をする
+    session = OAuth1Session(myinfo["CK"], myinfo["CS"], myinfo["AT"], myinfo["AS"])
+
     # コマンドリスト
-    cmd_list_mes = list()
-    cmd_list =("tweet",
-               "get_user_info",
-               "reply_follow_request",
-               "home_timeline",
-               "user_timeline",
-               "get_friends",
-               "get_followers",
-               "get_all_followers",
-               "search",
-               "place_trend",
-               "change_profile",
-               "check",         # コマンドリストの確認
-               "escape"         # プログラムの終了
+    cmd_list_mes = list()               # コマンドリスト表示用
+    cmd_list =("tweet",                 # ツイートする
+               "get_user_info",         # ユーザーの情報を取得する
+               "reply_follow_request",  # フォローリクエストに対してリプライする
+               "home_timeline",         # 自分のタイムラインを取得する
+               "user_timeline",         # ユーザーのタイムラインを取得する
+               "get_friends",           # 自分がフォローしているユーザーを取得する
+               "get_followers",         # 自分をフォローしているユーザーを取得する
+               "get_all_followers",     # 自分をフォローしている全ユーザーを取得する
+               "search",                # キーワード検索をする
+               "place_trend",           # 地域のトレンドを取得する
+               "change_profile",        # プロフィールを変更する
+               "check",                 # コマンドリストの確認
+               "escape"                 # プログラムの終了
                )
 
     # tweet()
@@ -789,8 +829,3 @@ if __name__ == '__main__':
     # place_trend()
 
     Pytwitter_main()
-
-    # ログに書き出す
-    # with open("PytwitterLog.log", "a+", encoding="utf-8") as f:
-    #     for l in log:
-    #         f.write(l)
