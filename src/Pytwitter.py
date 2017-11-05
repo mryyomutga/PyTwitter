@@ -7,7 +7,7 @@
 
 # Python2でPython3のprint()を使用するモジュール
 from __future__ import print_function
-# Requests,OAuth認証用ライブラリ(たぶんrequestsモジュールが内部にある)
+# Requests,OAuth認証用ライブラリ(requestsモジュールから派生)
 from requests_oauthlib import OAuth1Session
 # json形式データを扱うライブラリ
 import json
@@ -15,7 +15,7 @@ import json
 import os
 
 # Tweetを行う
-# #tag @name http://xxx を自動で検出する
+# #tag @name http://xxx は自動で検出されるため何も考えずに文章を考える
 # Parameter : None
 # Return  : None
 def tweet():
@@ -752,6 +752,9 @@ def Pytwitter_main():
                 check_cmd_list()
             elif cmd == cmd_list[12]:
                 Escape = True
+            # ただEnterキーが押された場合
+            elif cmd == "":
+                pass
         else:
             print("{0}はコマンドじゃないよ".format(cmd))
 
