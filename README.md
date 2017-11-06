@@ -38,7 +38,7 @@ Twitter APIに関して、Streamは使用しない(廃止されたようなこ�
 Twitter APIについて詳しい情報は[ここから](https://developer.twitter.com/en.html "Twitter Developer Platform")
 
 - フォローリクエストを出したユーザーに対してリプライを送る(相手には見えない)
-- Pytwitter.py内にある`Pytwitter_main`を呼ぶと、Pytwitterシェルが起動し、実装した機能を使用することができる
+- PyTwitter.py内にある`Pytwitter_main`を呼ぶと、実装した機能を使用することができる
 
 ## 問題点・解決方法
 - 鍵垢のユーザーが`get_follow_request_uid`・`get_user_info`・`reply_follow_request`を実行したときにリプライを送っても送信相手から見えない
@@ -109,7 +109,7 @@ Twitter APIについて詳しい情報は[ここから](https://developer.twitte
 - Twitter APIに`User Streams`というクライアントとTwitterサーバーに繋いでコネクションを維持してリアルタイムで情報を流してくれる便利なAPIが廃止される(現在deprecated)
 - `User Streams`の代わりの`account_activity/webhooks`というAPIが用意されるが、Twitterサーバーから更新をURLに投げつけるため、何かしらのサーバーが必要になる
 
-- 取得したURLを単純に表示させると、意味不明の文字列になる(expanded_urlを指定しないとhttps://twitter.com/とかにならない)
+- 取得したURLを単純に表示させると、意味不明の文字列になる(expanded_urlを指定しないと`https://twitter.com`とかにならない)
 
 ## ライブラリ
 - print_function
@@ -138,7 +138,7 @@ Twitter APIについて詳しい情報は[ここから](https://developer.twitte
 	- TwitterAPIを使うプログラムをターミナルで動かすか、情報だけを取り出すか切り分けるなら、クラスを作って継承させる
 - コマンドの実行結果をログに記録する(ファイルの拡張子など要検討)
 - ログの記録から様々な機能を提供する(できれば)
-- Bot機能の提供
+- ~~Bot機能の提供~~(node.jsをインストールする必要あり)
 - プログラム設計について考える
 - ~~リファクタリング~~(OAuth認証に関しては)
 - GUIなど、PytwitterのUIを実装できるとGood!!
