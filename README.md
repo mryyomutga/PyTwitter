@@ -18,22 +18,22 @@ Twitter APIに関して、Streamは使用しない(廃止されたようなこ�
 ## 説明
 開発環境はPython3.6.3なのでそれ以外の環境で動作するかは保証しません(特にPython2系)
 
-| Method                 | Discription |
-|:-----------------------|:------------|
-| tweet                  | ツイートする |
-| get_user_info          | 指定したユーザーの情報を取得する |
-| get_follow_request_uid | フォローリクエストの確認とユーザーIDを取得する |
-| get_req_user_info      | ユーザーIDからユーザー情報を取得する |
-| reply_follow_request   | フォローリクエストしているユーザーに対してリプライを送る |
-| create_friend_FolReq   | フォローリクエストしたユーザーをフォローする |
-| home_timeline          | 自分のタイムラインを取得する |
-| user_timeline          | 指定したユーザーのタイムラインを取得する |
-| get_friends            | 指定したユーザーの最新のフォローを50人取得する |
-| get_followers          | 指定したユーザーの最新のフォロワーを50人取得する |
-| get_all_followers      | 指定したユーザーの全フォロワーを取得する(非推奨) |
-| search                 | キーワードから100件のツイートを取得する |
-| place_trend            | 指定した地域のトレンドを取得する |
-| change_profile         | プロフィールを変更する |
+| Method | Discription | Return |
+|:-------|:------------|:-------|
+| tweet | ツイートする |  |
+| get_user_info | 指定したユーザーの情報を取得する |  |
+| get_follow_request_uid | フォローリクエストの確認とユーザーIDを取得する |  |
+| get_req_user_info | ユーザーIDからユーザー情報を取得する |  |
+| reply_follow_request | フォローリクエストしているユーザーに対してリプライを送る |  |
+| create_friend_FolReq | フォローリクエストしたユーザーをフォローする |  |
+| home_timeline | 自分のタイムラインを取得する |  |
+| user_timeline | 指定したユーザーのタイムラインを取得する |  |
+| get_friends | 指定したユーザーの最新のフォローを50人取得する |  |
+| get_followers | 指定したユーザーの最新のフォロワーを50人取得する |  |
+| get_all_followers | 指定したユーザーの全フォロワーを取得する(非推奨) |  |
+| search | キーワードから100件のツイートを取得する |  |
+| place_trend | 指定した地域のトレンドを取得する |  |
+| change_profile | プロフィールを変更する |  |
 
 Twitter APIについて詳しい情報は[ここから](https://developer.twitter.com/en.html "Twitter Developer Platform")
 
