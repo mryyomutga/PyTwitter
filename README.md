@@ -62,7 +62,7 @@ Twitter APIについて詳しい情報は[ここから](https://developer.twitte
 
 1. Twitter APIにアクセスするためにアプリケーションの登録をする
 
-	[Twitterの開発者向けサイト](https://apps.twitter.com/app/new)にアクセスして
+	[Twitter Application Management](https://apps.twitter.com/app/new)にアクセスして
 	- Consumer key
 	- Consumer secret
 	- Access token
@@ -70,7 +70,7 @@ Twitter APIについて詳しい情報は[ここから](https://developer.twitte
 
 	を取得する
 
-	細かいやり方は[ここ](http://website-planner.com/twitter%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E4%BD%9C%E6%88%90%EF%BC%88consumer-key%E3%80%81consumer-secret%E3%80%81access-token%E3%80%81access-token-secret/)
+	取得方法の解説は[ここ](https://syncer.jp/Web/API/Twitter/REST_API/)
 
 2. 取得した鍵をjsonファイルに書き込む
 
@@ -89,7 +89,7 @@ Twitter APIについて詳しい情報は[ここから](https://developer.twitte
 
 	となっている。(`screen_name`は自己満足のためにつけてる)
 
-	`screen_name`にtwitterの`@名前`の@抜きのものを書く
+	`screen_name`はTwitterの`@screen_name`
 
 	`CK`・`CS`・`AT`・`AS`にはそれぞれのキーを書き込む
 
@@ -110,6 +110,8 @@ Twitter APIについて詳しい情報は[ここから](https://developer.twitte
 - `User Streams`の代わりの`account_activity/webhooks`というAPIが用意されるが、Twitterサーバーから更新をURLに投げつけるため、何かしらのサーバーが必要になる
 
 - 取得したURLを単純に表示させると、意味不明の文字列になる(expanded_urlを指定しないと`https://twitter.com`とかにならない)
+
+- プロキシを使う場合は、`proxies`に値を設定する
 
 ## ライブラリ
 - print_function
@@ -138,7 +140,9 @@ Twitter APIについて詳しい情報は[ここから](https://developer.twitte
 	- TwitterAPIを使うプログラムをターミナルで動かすか、情報だけを取り出すか切り分けるなら、クラスを作って継承させる
 - コマンドの実行結果をログに記録する(ファイルの拡張子など要検討)
 - ログの記録から様々な機能を提供する(できれば)
-- ~~Bot機能の提供~~(node.jsをインストールする必要あり)
-- プログラム設計について考える
+- ~~Bot機能の提供(node.jsをインストールする必要あり)~~
+	- 途中で止まったりする
 - ~~リファクタリング~~(OAuth認証に関しては)
+- ~~プロキシ環境下に対応させる~~
+- プログラム設計について考える
 - GUIなど、PytwitterのUIを実装できるとGood!!
